@@ -12,7 +12,7 @@ export function NotificationBell({ userEmail }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/notifications/${userEmail}`);
       setNotifications(response.data);
@@ -21,7 +21,7 @@ export function NotificationBell({ userEmail }) {
     } catch (error) {
       console.error('Failed to fetch notifications');
     }
-  };
+  }, [userEmail]);
 
   useEffect(() => {
     if (userEmail) {

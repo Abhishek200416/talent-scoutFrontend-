@@ -827,9 +827,7 @@ function ProfilePage({ user, onProfileUpdated }) {
   const [emailChangeStep, setEmailChangeStep] = useState('input'); // 'input' | 'otp'
   const [emailChangeLoading, setEmailChangeLoading] = useState(false);
 
-  useEffect(() => { fetchProfile(); }, [fetchProfile]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await api.getCandidateProfile(user.email);
       const p = res.data;
@@ -857,7 +855,9 @@ function ProfilePage({ user, onProfileUpdated }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.email, user.name]);
+
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
   const set = (key) => (e) => setProfile(p => ({ ...p, [key]: e.target ? e.target.value : e }));
 
