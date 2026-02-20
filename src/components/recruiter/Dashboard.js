@@ -96,7 +96,7 @@ function RecruiterProfilePage({ user, onProfileUpdated }) {
 
   useEffect(function() {
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
 
   const fetchProfile = async function() {
     try {
@@ -551,25 +551,6 @@ function CandidateSearch({ user }) {
   const [recruiterJobs, setRecruiterJobs] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState('custom');
 
-  useEffect(function() {
-    api.getRecruiterProfile(user.email).then(function(res) {
-      setRecruiterProfile(res.data);
-    }).catch(function() {});
-    // Fetch recruiter jobs for JD dropdown
-    api.getRecruiterJobs(user.email).then(function(res) {
-      setRecruiterJobs(res.data || []);
-    }).catch(function() {});
-    handleSearch();
-  }, []);
-
-  // Escape key to close file viewer
-  useEffect(function() {
-    function handleEsc(e) { if (e.key === 'Escape' && viewingFile) setViewingFile(null); }
-    window.addEventListener('keydown', handleEsc);
-    return function() { window.removeEventListener('keydown', handleEsc); };
-  }, [viewingFile]);
-
-
   const handleSearch = async function() {
     setLoading(true);
     try {
@@ -586,6 +567,24 @@ function CandidateSearch({ user }) {
       setLoading(false);
     }
   };
+
+  useEffect(function() {
+    api.getRecruiterProfile(user.email).then(function(res) {
+      setRecruiterProfile(res.data);
+    }).catch(function() {});
+    // Fetch recruiter jobs for JD dropdown
+    api.getRecruiterJobs(user.email).then(function(res) {
+      setRecruiterJobs(res.data || []);
+    }).catch(function() {});
+    handleSearch();
+  }, [handleSearch, user.email]);
+
+  // Escape key to close file viewer
+  useEffect(function() {
+    function handleEsc(e) { if (e.key === 'Escape' && viewingFile) setViewingFile(null); }
+    window.addEventListener('keydown', handleEsc);
+    return function() { window.removeEventListener('keydown', handleEsc); };
+  }, [viewingFile]);
 
   const handleJobSelect = function(jobId) {
     setSelectedJobId(jobId);

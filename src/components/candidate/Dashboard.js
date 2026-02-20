@@ -827,7 +827,7 @@ function ProfilePage({ user, onProfileUpdated }) {
   const [emailChangeStep, setEmailChangeStep] = useState('input'); // 'input' | 'otp'
   const [emailChangeLoading, setEmailChangeLoading] = useState(false);
 
-  useEffect(() => { fetchProfile(); }, []);
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
   const fetchProfile = async () => {
     try {
@@ -1198,7 +1198,7 @@ function Overview({ user, onNameChange }) {
       }
       setWalletItems(walletRes.data);
     }).finally(() => setLoading(false));
-  }, [user.email]);
+  }, [user.email, onNameChange]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

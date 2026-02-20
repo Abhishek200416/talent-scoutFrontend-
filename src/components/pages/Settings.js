@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, Bell, Lock, Eye, Globe, Trash2, Download, Key, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Switch } from '../ui/switch';
@@ -30,6 +30,15 @@ export default function Settings({ user }) {
   const [sendingReset, setSendingReset] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
 
+  const checkPasswordStatus = useCallback(async () => {
+    try {
+      const res = await api.checkPasswordSet(user.email);
+      setHasPassword(res.data.has_password);
+    } catch (err) {
+      console.error('Failed to check password status', err);
+    }
+  }, [user.email]);
+
   useEffect(() => {
     // Load settings from localStorage
     const saved = localStorage.getItem(`settings_${user.email}`);
@@ -38,16 +47,7 @@ export default function Settings({ user }) {
     }
     // Check if user has password set
     checkPasswordStatus();
-  }, [user.email]);
-
-  const checkPasswordStatus = async () => {
-    try {
-      const res = await api.checkPasswordSet(user.email);
-      setHasPassword(res.data.has_password);
-    } catch (err) {
-      console.error('Failed to check password status', err);
-    }
-  };
+  }, [user.email, checkPasswordStatus]);
 
   const handleSave = () => {
     localStorage.setItem(`settings_${user.email}`, JSON.stringify(settings));
