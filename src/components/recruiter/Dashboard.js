@@ -94,17 +94,17 @@ function RecruiterProfilePage({ user, onProfileUpdated }) {
   const [emailChangeStep, setEmailChangeStep] = useState('input');
   const [emailChangeLoading, setEmailChangeLoading] = useState(false);
 
-  useEffect(function() {
-    fetchProfile();
-  }, [fetchProfile]);
-
-  const fetchProfile = async function() {
+  const fetchProfile = useCallback(async function() {
     try {
       const res = await api.getRecruiterProfile(user.email);
       setProfile(function(prev) { return Object.assign({}, prev, res.data); });
     } catch {}
     finally { setLoading(false); }
-  };
+  }, [user.email]);
+
+  useEffect(function() {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleSave = async function() {
     if (!profile.name.trim()) { toast.error('Name is required'); return; }
@@ -551,7 +551,7 @@ function CandidateSearch({ user }) {
   const [recruiterJobs, setRecruiterJobs] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState('custom');
 
-  const handleSearch = async function() {
+  const handleSearch = useCallback(async function() {
     setLoading(true);
     try {
       const params = {};
@@ -566,7 +566,7 @@ function CandidateSearch({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   useEffect(function() {
     api.getRecruiterProfile(user.email).then(function(res) {
