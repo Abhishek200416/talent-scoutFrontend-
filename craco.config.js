@@ -1,10 +1,22 @@
 // craco.config.js
 const path = require("path");
+
+// Save the original NODE_ENV set by CRACO before dotenv might modify it
+const originalNodeEnv = process.env.NODE_ENV;
+
+// Load dotenv but don't let it override NODE_ENV
 require("dotenv").config();
 
-// Check if we're in development/preview mode (not production build)
-// Craco sets NODE_ENV=development for start, NODE_ENV=production for build
-const isDevServer = process.env.NODE_ENV !== "production";
+// Restore NODE_ENV if dotenv changed it (which shouldn't happen but can cause issues)
+if (process.env.NODE_ENV !== originalNodeEnv) {
+  process.env.NODE_ENV = originalNodeEnv;
+}
+
+// Check if we're in development mode
+// CRACO always sets NODE_ENV appropriately (development for start, production for build)
+// We use a more reliable check - if NODE_ENV is explicitly "production", we're building
+const isProduction = process.env.NODE_ENV === "production";
+const isDevServer = !isProduction;
 
 // Environment variable overrides
 const config = {
@@ -71,6 +83,8 @@ const webpackConfig = {
 };
 
 // Only add babel metadata plugin during dev server
+// Note: react-refresh/babel is already included by react-scripts in development mode
+// We only need to add our custom metadata plugin
 if (config.enableVisualEdits && babelMetadataPlugin) {
   webpackConfig.babel = {
     plugins: [babelMetadataPlugin],
